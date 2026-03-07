@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Comment</h1>
+  <div id="comment"></div>
+  <script>
+    // reflected XSS example
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('comment').innerHTML = params.get('msg');
+  </script>
+</body>
+</html>
