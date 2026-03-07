@@ -30,14 +30,54 @@ port scanning, server-side request forgery, or denial of service.
   methods (e.g., `libxml2`’s `parseMemory` vs `parseFile`).
 - Ignoring non-XML input types such as SOAP or RSS feeds.
 
-## Quick checklist
+## Examples
 
-- [ ] Is DTD and entity parsing disabled for all XML input?
-- [ ] Are parser configurations explicitly set to safe defaults?
-- [ ] Could an attacker upload or send arbitrary XML (e.g., in file
-      uploads, SOAP, SAML assertions)?
-- [ ] Are you using a library known to be secure or patched against XXE?
+**Vulnerable Python (lxml):**
+```python
+from lxml import etree
 
-> The model should caution that even systems that only generate XML
-> could be at risk if they later parse untrusted XML (e.g., in a
-> microservice architecture).
+def load(xml_string):
+    # default parser resolves external entities
+    parser = etree.XMLParser()
+    return etree.fromstring(xml_string, parser)
+```
+
+**Safe Python:**
+```python
+from lxml import etree
+
+def load(xml_string):
+    parser = etree.XMLParser(resolve_entities=False, load_dtd=False)
+    return etree.fromstring(xml_string, parser)
+```
+
+**Java (insecure):**
+```java
+DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+DocumentBuilder db = dbf.newDocumentBuilder();
+Document doc = db.parse(new InputSource(new StringReader(xmlInput)));
+```
+
+**Java (hardened):**
+```java
+DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+DocumentBuilder db = dbf.newDocumentBuilder();
+Document doc = db.parse(new InputSource(new StringReader(xmlInput)));
+```
+
+## Prevention Checklist
+
+- [ ] DTD processing and external entity resolution are disabled by
+      default.
+- [ ] Parser configurations are explicit and set to safe values.
+- [ ] Incoming XML is validated against a strict schema before parsing.
+- [ ] Any XML input sources (file uploads, SOAP messages, SAML
+      assertions) are treated as untrusted.
+- [ ] Dependencies are reviewed to ensure no library re-enables XXE in
+      alternative APIs.
+- [ ] Consider switching to simpler formats such as JSON when XML
+      features aren’t required.
+

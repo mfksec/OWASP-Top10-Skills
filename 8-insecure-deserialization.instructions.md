@@ -24,6 +24,53 @@ application crashes.
    tampering.
 5. **Run deserialization logic in a sandbox or with limited permissions**.
 
+## Examples
+
+**Insecure: unsafe pickle deserialization (Python):**
+```python
+import pickle
+users = pickle.loads(request.data)  // Untrusted data!
+```
+
+**Secure: JSON deserialization (Python):**
+```python
+import json
+users = json.loads(request.data)  // Safe, only data structures
+```
+
+**Insecure: unsafe Java deserialization:**
+```java
+ObjectInputStream eis = new ObjectInputStream(request.getInputStream());
+Object obj = eis.readObject();  // Gadget chain risk!
+```
+
+**Secure: whitelisted class deserialization (Java):**
+```java
+ObjectInputStream eis = new ObjectInputStream(request.getInputStream()) {
+  protected Class<?> resolveClass(ObjectStreamClass osc)
+    throws IOException, ClassNotFoundException {
+    if (!osc.getName().startsWith("com.myapp.")) {
+      throw new ClassNotFoundException(osc.getName());
+    }
+    return super.resolveClass(osc);
+  }
+};
+Object obj = eis.readObject();
+```
+
+**Insecure: PHP unserialize with user input:**
+```php
+$data = unserialize($_COOKIE['user']);  // Dangerous!
+```
+
+**Secure: JSON for cookies (PHP):**
+```php
+$data = json_decode($_COOKIE['user'], true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+  throw new Exception('Invalid data');
+}
+```
+
 ## Exploitation techniques
 
 - Crafting a malicious payload that, when deserialized, invokes a
@@ -31,14 +78,11 @@ application crashes.
 - Modifying fields to escalate privileges, e.g., changing `isAdmin=false`
   to `true` in a serialized session object.
 
-## Quick checklist
+## Prevention Checklist
 
-- [ ] Does any user-controlled data get passed to a deserializer?
-- [ ] Are non-binary formats preferred wherever feasible?
-- [ ] Is deserialization restricted to known-safe classes?
-- [ ] Is there a mechanism to verify payload integrity (HMAC,
-      signature)?
-
-> The model should cite OWASP’s [Insecure Deserialization Cheat
-> Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Insecure_Deserialization_Cheat_Sheet.html)
-> for deeper study and suggest libraries or patterns that avoid the issue.
+- [ ] Serialized data is never accepted from user input; JSON is used instead.
+- [ ] Only trusted sources are deserialized if native serialization is unavoidable.
+- [ ] A whitelist of allowed classes is defined and enforced during deserialization.
+- [ ] Serialized payloads are signed (HMAC or RSA) to detect tampering.
+- [ ] Deserialization runs with minimal privileges or in a sandboxed environment.
+- [ ] Libraries and gadget chains are kept up to date and reviewed.

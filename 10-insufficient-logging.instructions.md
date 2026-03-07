@@ -24,6 +24,62 @@ incident.
 5. **Rotate and archive logs** securely; retain them for a period
    appropriate to your compliance needs.
 
+## Examples
+
+**Insecure: no logging of authentication events (Express.js):**
+```javascript
+app.post('/login', (req, res) => {
+  if (authenticate(req.body.username, req.body.password)) {
+    req.session.userId = user.id;  // No log!
+  }
+});
+```
+
+**Secure: logging authentication (Express.js):**
+```javascript
+const logger = require('winston');
+app.post('/login', (req, res) => {
+  try {
+    if (authenticate(req.body.username, req.body.password)) {
+      logger.info('Login successful', {
+        username: req.body.username,
+        ip: req.ip,
+        timestamp: new Date(),
+      });
+      req.session.userId = user.id;
+    } else {
+      logger.warn('Login failed', { username: req.body.username, ip: req.ip });
+    }
+  } catch (error) {
+    logger.error('Login error', { error: error.message });
+  }
+});
+```
+
+**Insecure: logging secrets (Python):**
+```python
+logger.info(f"Connecting with password: {password}")  // Don't do this!
+```
+
+**Secure: redacting secrets (Python):**
+```python
+logger.info(f"Connecting to DB")  // No sensitive data
+```
+
+**Insecure: insufficient monitoring:**
+```bash
+echo "Failed login" >> /var/log/auth.log  // Logs written, no alerts
+```
+
+**Secure: monitoring with alerts:**
+```yaml
+AlarmActions:
+  - SNS topic for failed logins
+MetricName: FailedLoginAttempts
+Statistic: Sum
+Threshold: 5  // Alert if 5 failed logins in 5 minutes
+```
+
 ## Edge cases
 
 - Logging too much data can expose sensitive information or create
@@ -33,13 +89,13 @@ incident.
 - Application logs may be bypassed if the attacker achieves remote code
   execution and disables logging.
 
-## Quick checklist
+## Prevention Checklist
 
-- [ ] Are critical events logged with sufficient detail?
-- [ ] Do logs avoid storing secrets?
-- [ ] Is there an alerting system for suspicious patterns?
-- [ ] Are log files protected from tampering?
-
-> The AI should encourage developers to assume "what isn't logged
-doesn't exist" and to build systems where logs are treated as a security
-asset.
+- [ ] All security-relevant events are logged: logins, failed authentications, access denials.
+- [ ] Logs include sufficient context: user ID, source IP, timestamp, action, result.
+- [ ] Sensitive data never appears in logs.
+- [ ] Logs are centralized and retained for a sufficient period.
+- [ ] Log integrity is protected: write-once storage or cryptographic signatures.
+- [ ] Automated alerts are triggered for suspicious patterns.
+- [ ] Log access is restricted to authorized personnel.
+- [ ] Log retention policies comply with compliance requirements.

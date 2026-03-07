@@ -28,6 +28,51 @@ attackers to access or transmit it insecurely.
 6. **Apply robust input validation** on uploads to prevent data
    exfiltration via metadata or hidden fields.
 
+## Examples
+
+**Insecure: storing API key in code (Python):**
+```python
+api_key = "sk-abc123xyz789"
+response = requests.get("https://api.example.com", headers={"Authorization": api_key})
+```
+
+**Secure: storing API key in environment variable (Python):**
+```python
+import os
+api_key = os.getenv("API_KEY")
+if not api_key:
+  raise ValueError("API_KEY not set")
+response = requests.get("https://api.example.com", headers={"Authorization": api_key})
+```
+
+**Insecure: logging sensitive data (Java):**
+```java
+logger.info("User login: username=" + username + ", password=" + password);
+```
+
+**Secure: masking sensitive data in logs (Java):**
+```java
+logger.info("User login: username=" + username + ", password=****");
+```
+
+**Insecure: transmitting over HTTP:**
+```html
+<form action="http://example.com/login" method="POST">
+  <input type="password" name="pwd">  <!-- Sent in cleartext! -->
+</form>
+```
+
+**Secure: enforcing HTTPS and headers (Node.js):**
+```javascript
+app.use((req, res, next) => {
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  if (req.protocol !== 'https') {
+    return res.redirect(301, 'https://' + req.host + req.url);
+  }
+  next();
+});
+```
+
 ## Edge cases
 
 - Data exposure through `Referer` headers when linking to third-party
@@ -37,14 +82,12 @@ attackers to access or transmit it insecurely.
 - In mobile apps, storing credentials in insecure storage (plist filed,
   SharedPreferences without encryption).
 
-## Quick checklist
+## Prevention Checklist
 
-- [ ] Is TLS enforced site‑wide?
-- [ ] Are sensitive values excluded from logs and stack traces?
-- [ ] Are encryption keys rotated and protected?
-- [ ] Does any URL leak private information?
-- [ ] Are appropriate security headers present?
+- [ ] HTTPS/TLS is enforced site-wide; HTTP traffic is redirected.
+- [ ] Encryption keys are stored securely (secrets manager, HSM, not in code).
+- [ ] Data at rest is encrypted with AES-256 or equivalent.
+- [ ] Sensitive values never appear in logs, error messages, or source code.
+- [ ] Security headers are configured: `Strict-Transport-Security`, `Content-Security-Policy`.
+- [ ] Database access is restricted to least-privilege accounts.
 
-> The model should point developers to OWASP’s [Cryptographic
-> Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)
-> when deeper guidance is necessary.

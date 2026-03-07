@@ -29,21 +29,67 @@ infrastructure components are left in insecure states.
 6. **Keep platform and dependencies patched**; disable version
    disclosure (e.g., `Server` header showing `nginx/1.18`).
 
+## Examples
+
+**Insecure: debug mode enabled in production (Flask):**
+```python
+app = Flask(__name__)
+app.debug = True  // Exposes stack traces, REPL access!
+```
+
+**Secure: debug mode disabled in production (Flask):**
+```python
+app = Flask(__name__)
+app.debug = False  // or use environment variable
+if not os.getenv('FLASK_ENV') == 'development':
+  app.debug = False
+```
+
+**Insecure: overpermissive CORS (Node.js/Express):**
+```javascript
+app.use(cors({ origin: '*' }));  // Allows any origin
+```
+
+**Secure: restrictive CORS (Node.js/Express):**
+```javascript
+app.use(cors({ origin: 'https://myapp.com', credentials: true }));
+```
+
+**Insecure: default credentials in database:**
+```bash
+mysql -u root -p  // Password: root (never changed!)
+```
+
+**Secure: strong, unique credentials:**
+```bash
+mysql -u dbadmin -p$(openssl rand -base64 32)  // Random password
+```
+
+**Insecure: version disclosure (Apache):**
+```
+Server: Apache/2.4.29 (Ubuntu)
+```
+
+**Secure: hide version (Apache config):**
+```apache
+ServerTokens Prod
+ServerSignature Off
+```
+
 ## Edge cases
 
-- Cloud metadata services accessible from application code (SSRF
-  risk).
+- Cloud metadata services accessible from application code (SSRF risk).
 - Over-permissive CORS policies (`Access-Control-Allow-Origin: *`).
 - Temporary debug flags left enabled (`app.debug = true`).
 
-## Quick checklist
+## Prevention Checklist
 
-- [ ] Are all default credentials changed?
-- [ ] Is debugging/logging disabled in production?
-- [ ] Are appropriate security headers configured?
-- [ ] Are unnecessary services and endpoints removed?
-- [ ] Are software versions hidden and up to date?
+- [ ] All default credentials have been changed to strong, unique values.
+- [ ] Debug mode and development endpoints are disabled in production.
+- [ ] Security headers are configured: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`.
+- [ ] CORS is explicitly configured with trusted origins only.
+- [ ] Unnecessary services, ports, and features are disabled.
+- [ ] Server version information is hidden.
+- [ ] All software and dependencies are up to date and regularly patched.
+- [ ] Access to cloud metadata endpoints is blocked.
 
-> The model should recommend using security scanners like
-> `Nessus`/`OpenVAS` or cloud provider tools for configuration audits
-> but still perform a manual review of settings.

@@ -29,22 +29,60 @@ implementation flaws to assume other users’ identities.
 7. **Protect password reset tokens** with sufficient entropy and
    expiration; send them via email only, not via SMS or GET parameters.
 
-## Common scenarios
+## Examples
 
-- `if (user.password == submitted)` — direct comparison suggests a lack
-  of hashing.
-- OTP or 2FA codes sent via email but validated without expiration checks.
-- `sessionid=123456` in query strings.
+**Insecure password storage (Node.js):**
+```javascript
+if (user.password === submittedPassword) { // No hashing!
+  // Authenticate user
+}
+```
 
-## Quick checklist
+**Secure password storage (Node.js with bcrypt):**
+```javascript
+const bcrypt = require('bcrypt');
+const hash = await bcrypt.hash(password, 10);
+if (await bcrypt.compare(submittedPassword, hash)) {
+  // Authenticate user
+}
+```
 
-- [ ] Are passwords hashed with an approved algorithm?
-- [ ] Is there brute-force protection on login endpoints?
-- [ ] Are session tokens unpredictable and stored securely?
-- [ ] Are authentication cookies marked `Secure` and `HttpOnly`?
-- [ ] Does logout or password change invalidate existing sessions?
-- [ ] Is MFA offered or enforced where appropriate?
+**Insecure session handling (PHP):**
+```php
+$_SESSION['user_id'] = $user_id; // Session ID is predictable
+```
 
-> The AI should also remind developers of secure libraries like
-> `Passport.js`, `Spring Security`, or `Devise` that handle many of
-> these issues, and to keep dependencies up to date.
+**Secure session handling (PHP):**
+```php
+session_regenerate_id(true);
+setcookie('PHPSESSID', '', [
+  'expires' => time() + 3600,
+  'path' => '/',
+  'secure' => true,
+  'httponly' => true,
+  'samesite' => 'Strict',
+]);
+```
+
+**Weak password reset token (Python):**
+```python
+import random
+token = str(random.randint(100000, 999999))  // Guessable!
+```
+
+**Strong password reset token (Python):**
+```python
+import secrets
+token = secrets.token_urlsafe(32)  // Cryptographically secure
+```
+
+## Prevention Checklist
+
+- [ ] Passwords are hashed using bcrypt, Argon2, or PBKDF2 with adequate salt and iterations.
+- [ ] Login endpoints have rate limiting or account lockout after failed attempts.
+- [ ] Session tokens are generated using cryptographically secure randomness.
+- [ ] Authentication cookies are marked `Secure`, `HttpOnly`, and `SameSite=Strict`.
+- [ ] Sessions are invalidated on logout and after inactivity periods.
+- [ ] Password reset tokens expire after a short time and are single-use.
+- [ ] Multi-factor authentication is implemented for privileged accounts.
+

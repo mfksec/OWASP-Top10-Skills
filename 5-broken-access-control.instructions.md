@@ -27,21 +27,80 @@ references.
    (e.g., Django’s `@login_required` + `user.has_perm`, Spring Security
    annotations, Express ACL middleware).
 
+## Examples
+
+**Insecure: no authorization check (Express.js):**
+```javascript
+app.get('/users/:id/orders', (req, res) => {
+  const orders = db.query('SELECT * FROM orders WHERE user_id = ?', req.params.id);
+  res.json(orders); // No check if req.user.id === req.params.id!
+});
+```
+
+**Secure: authorization check (Express.js):**
+```javascript
+app.get('/users/:id/orders', (req, res) => {
+  if (req.user.id !== parseInt(req.params.id)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const orders = db.query('SELECT * FROM orders WHERE user_id = ?', req.params.id);
+  res.json(orders);
+});
+```
+
+**Insecure: client-side only enforcement (JavaScript):**
+```javascript
+if (user.role === 'admin') {
+  document.getElementById('deleteBtn').style.display = 'block';
+}
+```
+
+**Secure: server-side authorization (Django):**
+```python
+from django.contrib.auth.decorators import permission_required
+
+@permission_required('app.delete_resource')
+def delete_resource(request, resource_id):
+  if request.user.id != resource.owner_id:
+    return HttpResponseForbidden()
+  resource.delete()
+  return JsonResponse({'status': 'deleted'})
+```
+
+**Insecure: mass assignment (Python/Flask):**
+```python
+@app.route('/user/update', methods=['POST'])
+def update_user():
+  user = User.query.get(request.form.get('user_id'))
+  user.update(request.form)  // Blindly assigns all fields!
+  db.session.commit()
+```
+
+**Secure: whitelist allowed fields (Python/Flask):**
+```python
+@app.route('/user/update', methods=['POST'])
+def update_user():
+  user = User.query.get(request.user.id)  // Use authenticated user
+  allowed_fields = {'name', 'email', 'phone'}
+  for field in allowed_fields:
+    if field in request.form:
+      setattr(user, field, request.form[field])
+  db.session.commit()
+```
+
 ## Bypass techniques
 
 - Parameter tampering: modify `?id=42` to `?id=43`.
-- Changing HTTP verbs: using `PUT` instead of `POST` if only `POST`
-  handlers validate permissions.
+- Changing HTTP verbs: using `PUT` instead of `POST` if only `POST` handlers validate permissions.
 - Exploiting mass-assignment to overwrite `role` or `isAdmin` flags.
 
-## Quick checklist
+## Prevention Checklist
 
-- [ ] Are resource accesses checked against the authenticated user?
-- [ ] Do APIs verify both the identity and the requested action?
-- [ ] Is there a centralized place for authorization logic?
-- [ ] Are default-deny policies in place when roles are ambiguous?
+- [ ] Authorization is enforced on the server for every sensitive operation.
+- [ ] User identity is verified before access checks.
+- [ ] Resource ownership is confirmed before permitting the action.
+- [ ] A centralized authorization mechanism is used consistently.
+- [ ] Default-deny policy is applied; only explicitly allowed actions are permitted.
+- [ ] All HTTP methods (GET, POST, PUT, DELETE, PATCH) are protected.
+- [ ] Mass-assignment vulnerabilities are prevented by whitelisting fields.
 
-> The AI should remind developers that access control is a common
-> source of high-severity vulnerabilities in bug bounty reports and to
-> consider using attribute-based access control (ABAC) for complex
-> scenarios.
