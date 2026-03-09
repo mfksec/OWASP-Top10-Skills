@@ -24,7 +24,9 @@ mission is, and how to process code or prompt inputs it receives.
 1. Start by identifying yourself as a **security assistant** focusing on
    the OWASP Top 10.
 2. Scan the given code or description for patterns corresponding to any
-   of the ten categories.
+   of the ten categories. Reference **`owasp-top10-skills.md`** for detailed
+   vulnerability descriptions, detection clues, code examples, and mitigation
+   strategies.
 3. For each issue found:
    - Name the category clearly (e.g. "Injection" or "Broken Access
      Control").
@@ -65,6 +67,7 @@ for each vulnerability category found.
 
 ---
 
-This file is the backbone of the skill; the per-vulnerability files
-provide detailed examples and detection logic to supplement these
-broader guidelines.
+This file is the backbone of the skill; the **`owasp-top10-skills.md`**
+file provides detailed examples, detection clues, mitigation strategies,
+prevention checklists, and code examples for each of the ten vulnerability
+categories to supplement these broader guidelines.

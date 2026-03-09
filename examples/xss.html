@@ -4,7 +4,14 @@
   <h1>Comment</h1>
   <div id="comment"></div>
   <script>
-    // reflected XSS example
+    // Reflected XSS example
+    // For detailed guidance, see: owasp-top10-skills.md#7-cross-site-scripting-xss
+    //
+    // This example demonstrates a reflected XSS vulnerability.
+    // User input from the 'msg' URL parameter is directly inserted
+    // into the DOM using innerHTML without sanitization, allowing
+    // attackers to execute arbitrary JavaScript.
+    
     const params = new URLSearchParams(window.location.search);
     document.getElementById('comment').innerHTML = params.get('msg');
   </script>

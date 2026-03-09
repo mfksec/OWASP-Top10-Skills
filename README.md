@@ -64,8 +64,11 @@ classes:
 9. Outdated or vulnerable third-party components
 10. Insufficient Logging & Monitoring
 
-Each category has its own instruction file that teaches the model how
-attackers think and how developers should fight back.
+All ten vulnerability categories are covered in the comprehensive
+**`owasp-top10-skills.md`** file. This consolidated guide teaches the model
+how attackers think and how developers should fight back, with practical
+examples, mitigation strategies, and prevention checklists for each
+vulnerability type.
 
 
 ## 🚀 Quick Start
@@ -86,20 +89,27 @@ to patch the issue.
 You can also call it directly:
 
 ```
-Run a full OWASP Top 10 audit on my project.
+Review my code against the OWASP Top 10 and provide recommendations.
 ```
 
-and it will return a checklist-style summary.
+The assistant will return a detailed security analysis with references to
+the specific vulnerability categories in **`owasp-top10-skills.md`**, including
+code examples, mitigation strategies, and prevention checklists.
 
 ## 🧪 Examples
 
 A handful of intentionally vulnerable snippets are included in the
-`examples/` folder.  You can paste their contents into a prompt or open
-them in a browser to trigger the corresponding vulnerability.  These are
-for manual testing and learning only:
+`examples/` folder.  You can paste their contents into a prompt to trigger
+the corresponding vulnerability detection.  These are for manual testing and
+learning only:
 
 - `examples/injection.js` – SQL injection via string concatenation.
 - `examples/xss.html` – reflected XSS using `innerHTML`.
+
+For detailed guidance on each vulnerability category, refer to the
+**`owasp-top10-skills.md`** file, which contains comprehensive explanations,
+detection hints, mitigation strategies, and prevention checklists for all
+ten OWASP Top 10 vulnerabilities.
 
 Feel free to add more samples for other categories as you build out the
 skill.
