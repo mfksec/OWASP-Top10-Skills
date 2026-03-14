@@ -16,7 +16,7 @@ This guide provides comprehensive testing procedures to validate the OWASP Secur
 
 # Manual check
 ls -la owasp-comprehensive-security-skills.md
-ls -la owasp-top10.instructions.md
+ls -la owasp-css.instructions.md
 ls -la skill.json
 ls -la DEPLOYMENT.md
 ls -la TESTING.md

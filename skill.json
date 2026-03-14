@@ -185,7 +185,7 @@
   "files": {
     "core": {
       "skills_guide": "owasp-comprehensive-security-skills.md",
-      "instructions": "owasp-top10.instructions.md",
+      "instructions": "owasp-css.instructions.md",
       "readme": "README.md",
       "contributing": "CONTRIBUTING.md"
     },
@@ -363,7 +363,7 @@
     "verification": {
       "check_files": [
         "owasp-comprehensive-security-skills.md",
-        "owasp-top10.instructions.md",
+        "owasp-css.instructions.md",
         "README.md",
         "examples/"
       ],

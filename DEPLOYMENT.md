@@ -115,7 +115,7 @@ The skill automatically activates when it detects:
 
 To customize activation rules:
 
-1. Edit `owasp-top10.instructions.md` for model guidance
+1. Edit `owasp-css.instructions.md` for model guidance
 2. Edit `skill.json` for activation trigger configuration
 3. Update `README.md` for documentation changes
 4. Add new examples to `examples/` folder
@@ -150,7 +150,7 @@ This will verify all files are present.
 **Solution:**
 1. Verify `owasp-comprehensive-security-skills.md` is intact
 2. Check `skill.json` has correct section references
-3. Update instructions in `owasp-top10.instructions.md`
+3. Update instructions in `owasp-css.instructions.md`
 
 ### Performance Issues
 

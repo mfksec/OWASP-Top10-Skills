@@ -72,7 +72,7 @@ verify_installation() {
     
     local required_files=(
         "owasp-comprehensive-security-skills.md"
-        "owasp-top10.instructions.md"
+        "owasp-css.instructions.md"
         "README.md"
         "skill.json"
     )
