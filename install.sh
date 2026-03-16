@@ -2,7 +2,10 @@
 # OWASP Security Skill Installation Script
 # Installs the comprehensive OWASP security skill for Claude, Copilot, or other LLM assistants
 
-set -e  # Exit on error
+set -euo pipefail  # Exit on error, undefined variable, or pipe failure
+
+# Cleanup on exit
+trap 'echo -e "\n${YELLOW}Installation interrupted or failed${NC}" >&2' EXIT
 
 # Colors for output
 RED='\033[0;31m'
@@ -11,14 +14,21 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'  # No Color
 
-# Detect OS
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    SKILLS_BASE="${HOME}/.config"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    SKILLS_BASE="${HOME}"
-else
-    SKILLS_BASE="${HOME}"
-fi
+# Detect OS and set appropriate base path
+detect_os() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux: Use .local/share for skills
+        SKILLS_BASE="${HOME}/.local/share"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS: Use home directory
+        SKILLS_BASE="${HOME}"
+    else
+        # Other: Default to home
+        SKILLS_BASE="${HOME}"
+    fi
+}
+
+detect_os
 
 echo -e "${BLUE}======================================${NC}"
 echo -e "${BLUE}OWASP Security Skill Installer${NC}"
@@ -113,7 +123,17 @@ echo "  3) Custom path"
 echo "  4) Test only (no installation)"
 echo "  5) Exit"
 echo ""
-read -p "Enter choice [1-5]: " choice
+
+if ! read -r -t 30 -p "Enter choice [1-5]: " choice; then
+    echo -e "\n${RED}No input received (timeout)${NC}"
+    exit 1
+fi
+
+# Validate choice is numeric
+if ! [[ "$choice" =~ ^[1-5]$ ]]; then
+    echo -e "${RED}Invalid choice: $choice${NC}"
+    exit 1
+fi
 
 case $choice in
     1)
@@ -136,7 +156,16 @@ case $choice in
         fi
         ;;
     3)
-        read -p "Enter custom installation path: " custom_path
+        if ! read -r -p "Enter custom installation path: " custom_path; then
+            echo -e "${RED}Installation cancelled${NC}"
+            exit 1
+        fi
+        
+        if [ -z "$custom_path" ]; then
+            echo -e "${RED}Error: Custom path cannot be empty${NC}"
+            exit 1
+        fi
+        
         install_skill "Custom" "$custom_path"
         if [ $? -eq 0 ]; then
             verify_installation "${SKILLS_BASE}/${custom_path}"

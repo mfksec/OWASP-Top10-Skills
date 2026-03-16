@@ -26,14 +26,17 @@ Getting started is fast:
    git clone https://github.com/mfkocalar/OWASP-Security-Skills.git
    cd OWASP-Security-Skills
    ```
-2. Link or copy it into your assistant's skill folder:
-   - **Claude:** `~/.claude/skills/owasp-security`
-   - **GitHub Copilot:** `~/.copilot/skills/owasp-security` or `.github/skills`
-   - **Other agents:** similar directories under `~/.agents`
 
+2. Run the interactive installer:
    ```bash
-   ln -s "$PWD" ~/.claude/skills/owasp-security
+   ./install.sh
    ```
+   
+   Or link manually:
+   - **Claude (macOS):** `ln -s "$PWD" ~/.claude/skills/owasp-security`
+   - **Claude (Linux):** `ln -s "$PWD" ~/.local/share/claude/skills/owasp-security`
+   - **GitHub Copilot:** `ln -s "$PWD" ~/.copilot/skills/owasp-security`
+   - **Other agents:** similar directories under `~/.agents`
 
 3. Reload or restart the assistant if needed.
 

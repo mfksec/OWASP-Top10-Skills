@@ -34,33 +34,37 @@ Database comment from attacker:
 LLM retrieves comment and includes in prompt for processing → performs unintended action.
 ```
 
-### SECURE: Input Validation & Structured Templating
+### SECURE: Parameter-based separation (no string concatenation)
 
 ```python
 from langchain import OpenAI, ConversationChain
 from langchain.memory import ConversationBufferMemory
-import re
 
 # VULNERABLE: Unsafe concatenation
 def vulnerable_chat(user_message):
     prompt = f"Customer support assistant.\n\nUser: {user_message}\nAssistant:"
     return llm(prompt)
 
-# SECURE: Validated input + structured template
+# SECURE: Parameter-based separation (no string concatenation)
 def secure_chat(user_message):
-    # Input validation: restrict to safe characters
-    if not re.match(r'^[\w\s\?\'\"\.\,\!\-]+$', user_message):
-        return "Invalid input. Please use only letters, numbers, and basic punctuation."
+    # Input validation: length limits
+    if len(user_message) > 500:
+        return "Input exceeds maximum length of 500 characters."
     
-    # Message length limits to prevent token exhaustion
-    user_message = user_message[:500]
+    # CRITICAL: Use message-based API with role separation - do NOT concatenate
+    # User input is passed as a separate message parameter, NOT embedded in system prompt
+    messages = [
+        {"role": "system", "content": "You are a helpful customer service assistant. Only answer questions about orders."},
+        {"role": "user", "content": user_message}  # Passed as parameter, not concatenated
+    ]
     
-    # Structured templating with clear delimiters
-    system_prompt = "You are a helpful customer service assistant."
-    structured_input = f"USER_MESSAGE:[{user_message}]END_MESSAGE"
-    
-    full_prompt = f"{system_prompt}\n\n{structured_input}\n\nResponse:"
-    return llm(full_prompt)
+    # LLM API keeps system instructions separate from user input
+    response = llm.chat.completions.create(
+        model="gpt-4",
+        messages=messages,
+        max_tokens=500
+    )
+    return response.choices[0].message.content
 
 # EVEN MORE SECURE: Use framework with built-in guardrails
 memory = ConversationBufferMemory()
@@ -68,7 +72,7 @@ conversation = ConversationChain(
     llm=OpenAI(),
     memory=memory,
     prompt_template="Helpful assistant. Answer {user_input}",
-    # Sanitization and validation handled by framework
+    # Framework handles parameter separation internally
 )
 response = conversation.predict(user_input=user_message)
 ```

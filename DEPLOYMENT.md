@@ -18,14 +18,21 @@ This script will:
 
 ### Option 2: Manual Installation
 
-For **Claude Desktop** (macOS/Linux):
+For **Claude Desktop** (macOS):
 ```bash
 mkdir -p ~/.claude/skills
 ln -s /path/to/OWASP-Security-Skills ~/.claude/skills/owasp-security
 # Restart Claude Desktop
 ```
 
-For **GitHub Copilot:
+For **Claude Desktop** (Linux):
+```bash
+mkdir -p ~/.local/share/claude/skills
+ln -s /path/to/OWASP-Security-Skills ~/.local/share/claude/skills/owasp-security
+# Restart Claude Desktop
+```
+
+For **GitHub Copilot**:
 ```bash
 mkdir -p ~/.copilot/skills
 ln -s /path/to/OWASP-Security-Skills ~/.copilot/skills/owasp-security
