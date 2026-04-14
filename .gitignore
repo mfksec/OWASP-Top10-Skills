@@ -26,3 +26,6 @@ build/
 # IDE and editor files
 .eslintignore
 .prettierignore
+
+# Skill-creator eval workspace (local scratch data — benchmark runs, grading outputs)
+owasp-security-audit-workspace/
