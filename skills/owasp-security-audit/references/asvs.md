@@ -8,8 +8,7 @@ a narrative standard like the Top 10.
 
 **Source:** OWASP Application Security Verification Standard —
 <https://owasp.org/www-project-application-security-verification-standard/>.
-Version 5.0 is the current release as of this writing [?]; confirm
-the version text against the project page before quoting verbatim.
+Version 5.0 is the current release as of this writing.
 
 ## Verification levels
 
@@ -232,7 +231,7 @@ When reviewing against ASVS:
 3. Escalate to L2 for any sensitive-data app; L3 only when the user
    asks for it or the domain is regulated.
 4. In the report, cite the chapter + level: "Ch. 2 L2 — requirement
-   2.1.5 (MFA for sensitive operations) — not met; no MFA step in
+   V2.1.5 (MFA for sensitive operations) — not met; no MFA step in
    `/admin/users/delete`".
 
 The OWASP ASVS checklist is published as a spreadsheet/CSV; pull it

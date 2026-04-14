@@ -46,10 +46,11 @@ class VulnerableLogger:
     def __init__(self):
         # VULNERABLE: Basic logging without filters
         self.logger = logging.getLogger('app')
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(message)s')
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
+        if not self.logger.handlers:
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter('%(message)s')
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
     
     def login_attempt(self, username, password):
         # VULNERABLE: Password logged in plaintext!
@@ -78,8 +79,9 @@ class VulnerableDistributedLogs:
         # VULNERABLE: No centralized search/analysis
         # VULNERABLE: Easy to delete logs on compromise
         self.logger = logging.getLogger('local_service')
-        handler = logging.FileHandler('/var/log/app.log')
-        self.logger.addHandler(handler)
+        if not self.logger.handlers:
+            handler = logging.FileHandler('/var/log/app.log')
+            self.logger.addHandler(handler)
     
     def process_request(self, request_id, user_id, action):
         # VULNERABLE: Log entry doesn't correlate requests across services
@@ -95,8 +97,9 @@ class VulnerableMonitoring:
     
     def __init__(self):
         self.logger = logging.getLogger('app')
-        handler = logging.FileHandler('/var/log/app.log')
-        self.logger.addHandler(handler)
+        if not self.logger.handlers:
+            handler = logging.FileHandler('/var/log/app.log')
+            self.logger.addHandler(handler)
         # VULNERABLE: No alerting configured
         # Logs exist but no one checks them
     
@@ -122,14 +125,15 @@ class SecureLogger:
         self.logger = logging.getLogger('security')
         
         # SECURE: Log to dedicated security log
-        handler = logging.FileHandler('/var/log/security.log')
-        
-        # Use JSON formatter for structured logging
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
+        if not self.logger.handlers:
+            handler = logging.FileHandler('/var/log/security.log')
+            
+            # Use JSON formatter for structured logging
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            )
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
     
     def log_security_event(self, event_type, user_id, details, severity='INFO'):
         """

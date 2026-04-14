@@ -146,7 +146,7 @@ degrades on target inputs. 2025 pairs data and model poisoning.
 
 ## LLM05:2025 — Improper Output Handling
 
-Source: <https://genai.owasp.org/llmrisk/llm05:2025-improper-output-handling/>
+Source: <https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/>
 
 Downstream systems treat LLM output as trusted, enabling XSS, SSRF,
 SQL injection, or shell injection when the output is rendered or

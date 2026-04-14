@@ -188,8 +188,8 @@ class AuthorizedToolExecutor:
     
     def execute_tool(self, tool_name: str, **kwargs) -> str:
         if not self.can_execute(tool_name):
-            return f"ERROR: User role '{self.user_role}' cannot access tool '{tool_name}'. " \
-                   "This action has been logged for security review."
+            raise PermissionError(f"User role '{self.user_role}' cannot access tool '{tool_name}'. " \
+                   "This action has been logged for security review.")
         
         # Audit log the tool call
         self.audit_log(f"Tool '{tool_name}' called by {self.user_role}")
@@ -228,7 +228,8 @@ response = llm.generate(user_input)  # Costs $$$, exhausts resources
 
 ```python
 class RateLimitedLLMWrapper:
-    def __init__(self, max_tokens_per_request=500, max_requests_per_minute=10):
+    def __init__(self, llm, max_tokens_per_request=500, max_requests_per_minute=10):
+        self.llm = llm
         self.max_tokens_per_request = max_tokens_per_request
         self.max_requests_per_minute = max_requests_per_minute
         self.request_log: Dict[str, List[float]] = {}
@@ -266,7 +267,7 @@ class RateLimitedLLMWrapper:
             return "ERROR: Input too long (max 1000 tokens)."
         
         # Safe invocation
-        response = llm.generate(prompt, max_tokens=max_resp_tokens)
+        response = self.llm.generate(prompt, max_tokens=max_resp_tokens)
         return response
 
 # Usage

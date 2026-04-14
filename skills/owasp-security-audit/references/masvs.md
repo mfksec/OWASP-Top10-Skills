@@ -7,7 +7,7 @@ attacker. MASVS codifies what to do about that.
 
 **Source:** OWASP Mobile Application Security Verification Standard —
 <https://mas.owasp.org/MASVS/>. Version 2.1.0 is the current release as
-of this writing [?]; confirm against the MAS site if citing version
+of this writing; confirm against the MAS site if citing version
 text verbatim.
 
 ## Structure
@@ -76,9 +76,11 @@ func store(account: String, secret: Data) {
 **Android secure storage**
 ```kotlin
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKey
 
-val key = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+val key = MasterKey.Builder(context)
+    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+    .build()
 val prefs = EncryptedSharedPreferences.create(
     "secret_prefs", key, context,
     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,

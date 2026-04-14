@@ -120,7 +120,7 @@ function secure_api_call() {
 function secure_encrypt_data(plaintext) {
     // SECURE: Configuration
     const algorithm = 'aes-256-gcm';
-    const key = crypto.scryptSync(process.env.ENCRYPTION_KEY, 'salt', 32);
+    const key = crypto.scryptSync(process.env.DATABASE_ENCRYPTION_KEY, 'salt', 32);
     const iv = crypto.randomBytes(16); // Random IV each time
     
     // Encrypt
@@ -141,7 +141,7 @@ function secure_encrypt_data(plaintext) {
 
 function secure_decrypt_data(encrypted_obj) {
     const algorithm = 'aes-256-gcm';
-    const key = crypto.scryptSync(process.env.ENCRYPTION_KEY, 'salt', 32);
+    const key = crypto.scryptSync(process.env.DATABASE_ENCRYPTION_KEY, 'salt', 32);
     
     const decipher = crypto.createDecipheriv(
         algorithm,

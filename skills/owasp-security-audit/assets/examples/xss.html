@@ -12,57 +12,63 @@
   <h2>VULNERABLE: Reflected XSS</h2>
   <div id="vulnerable-comment"></div>
   <script>
-    // Reflected XSS example
-    // For detailed guidance, see: owasp-comprehensive-security-skills.md#section-1-owasp-top-10-2025
-    //
-    // This example demonstrates a reflected XSS vulnerability (A07).
-    // User input from the 'msg' URL parameter is directly inserted
-    // into the DOM using innerHTML without sanitization, allowing
-    // attackers to execute arbitrary JavaScript.
-    
-    const params = new URLSearchParams(window.location.search);
-    const msg = params.get('vulnerable');
-    
-    if (msg) {
-      // UNSAFE: Direct innerHTML insertion
-      document.getElementById('vulnerable-comment').innerHTML = msg;
-      // Attacker's script executes here!
-    }
+    (() => {
+      // Reflected XSS example
+      // For detailed guidance, see: owasp-comprehensive-security-skills.md#section-1-owasp-top-10-2025
+      //
+      // This example demonstrates a reflected XSS vulnerability (A07).
+      // User input from the 'msg' URL parameter is directly inserted
+      // into the DOM using innerHTML without sanitization, allowing
+      // attackers to execute arbitrary JavaScript.
+      
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('vulnerable');
+      
+      if (msg) {
+        // UNSAFE: Direct innerHTML insertion
+        document.getElementById('vulnerable-comment').innerHTML = msg;
+        // Attacker's script executes here!
+      }
+    })();
   </script>
   
   <!-- ===== SECURE: Text Content (No HTML Parsing) ===== -->
   <h2>SECURE: Using textContent</h2>
   <div id="safe-comment-1"></div>
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const msg = params.get('safe1');
-    
-    if (msg) {
-      // SECURE: Use textContent instead of innerHTML
-      // textContent treats input as plain text, not HTML
-      // No script tags, HTML, or JavaScript can execute
-      document.getElementById('safe-comment-1').textContent = msg;
-    }
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('safe1');
+      
+      if (msg) {
+        // SECURE: Use textContent instead of innerHTML
+        // textContent treats input as plain text, not HTML
+        // No script tags, HTML, or JavaScript can execute
+        document.getElementById('safe-comment-1').textContent = msg;
+      }
+    })();
   </script>
   
   <!-- ===== SECURE: HTML Sanitization ===== -->
   <h2>SECURE: DOMPurify HTML Sanitization</h2>
   <div id="safe-comment-2"></div>
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const msg = params.get('safe2');
-    
-    if (msg) {
-      // SECURE: Use DOMPurify to sanitize HTML
-      // Removes malicious scripts while preserving safe HTML
-      const cleanHTML = DOMPurify.sanitize(msg);
-      document.getElementById('safe-comment-2').innerHTML = cleanHTML;
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('safe2');
       
-      // Example: 
-      // Input:  <b>Bold</b><img src=x onerror="alert('XSS')">
-      // Output: <b>Bold</b>
-      // (The img tag with onerror is removed)
-    }
+      if (msg) {
+        // SECURE: Use DOMPurify to sanitize HTML
+        // Removes malicious scripts while preserving safe HTML
+        const cleanHTML = DOMPurify.sanitize(msg);
+        document.getElementById('safe-comment-2').innerHTML = cleanHTML;
+        
+        // Example: 
+        // Input:  <b>Bold</b><img src=x onerror="alert('XSS')">
+        // Output: <b>Bold</b>
+        // (The img tag with onerror is removed)
+      }
+    })();
   </script>
   
   <!-- ===== SECURE: Server-Side Escaping ===== -->

@@ -46,7 +46,8 @@ app.get('/user/safe', (req, res) => {
 app.get('/user/safest', (req, res) => {
   const userId = req.query.id;
   
-  if (!userId || !Number.isInteger(parseInt(userId)) || parseInt(userId) <= 0) {
+  // Use strict numeric validation: ensure userId contains only digits
+  if (!userId || !/^\d+$/.test(userId) || parseInt(userId) <= 0) {
     res.status(400).json({ error: "Invalid user ID" });
     return;
   }

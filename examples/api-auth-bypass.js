@@ -14,7 +14,7 @@ const app = express();
 app.use(require('cors')({ origin: '*' }));
 
 // VULNERABLE: JWT parsed without verification
-app.get('/api/orders', (req, res) => {
+app.get('/api/orders-vulnerable', (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'No token' });
   
@@ -27,7 +27,7 @@ app.get('/api/orders', (req, res) => {
 });
 
 // VULNERABLE: Admin endpoint accessible to any authenticated user (no function-level auth)
-app.delete('/api/admin/users/:id', (req, res) => {
+app.delete('/api/admin/users-vulnerable/:id', (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Auth required' });
   

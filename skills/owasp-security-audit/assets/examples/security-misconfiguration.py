@@ -19,6 +19,11 @@ app = Flask(__name__)
 # Exposes full stack traces, variables, and allows interactive debugging
 app.run(debug=True, host='0.0.0.0', port=5000)
 
+def process_data(data):
+    # VULNERABLE: No input validation or sanitization
+    return {'processed': data}
+
+
 @app.route('/api/data', methods=['GET'])
 def get_data():
     # VULNERABLE: Debug=True means this error will show full traceback
@@ -90,7 +95,7 @@ services:
     environment:
       # VULNERABLE: Hardcoded sensitive data in compose file
       DATABASE_URL: "postgresql://admin:password123@db:5432/mydb"
-      API_KEY: "sk-abc123xyz789"
+      API_KEY: "FAKE_API_KEY_DO_NOT_USE"
       DEBUG: "true"
     ports:
       # VULNERABLE: Unnecessary ports exposed

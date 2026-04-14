@@ -137,7 +137,7 @@ PATTERNS: list[tuple[str, str, re.Pattern[str], str]] = [
 
     # --- A10 / API7 SSRF ---
     ("requests-get-no-timeout", "Top10:A10",
-     re.compile(r"\brequests\.get\([^)]*\)"),
+     re.compile(r"\brequests\.get\((?![^)]*\btimeout\s*=)[^)]*\)"),
      "requests.get without timeout — risks hangs; also check for SSRF"),
 
     # --- Kubernetes ---
@@ -183,7 +183,11 @@ PATTERNS: list[tuple[str, str, re.Pattern[str], str]] = [
 def iter_files(root: Path, includes: Iterable[str]) -> Iterable[Path]:
     include_list = list(includes)
     if root.is_file():
-        yield root
+        try:
+            if root.stat().st_size <= MAX_FILE_BYTES:
+                yield root
+        except OSError:
+            pass
         return
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]

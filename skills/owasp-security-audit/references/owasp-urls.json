@@ -51,7 +51,7 @@
   "LLM02:2025": {"title": "Sensitive Information Disclosure", "edition": "2025", "url": "https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/", "confidence": "verified"},
   "LLM03:2025": {"title": "Supply Chain", "edition": "2025", "url": "https://genai.owasp.org/llm-top-10/", "confidence": "index-fallback"},
   "LLM04:2025": {"title": "Data and Model Poisoning", "edition": "2025", "url": "https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/", "confidence": "verified"},
-  "LLM05:2025": {"title": "Improper Output Handling", "edition": "2025", "url": "https://genai.owasp.org/llmrisk/llm05:2025-improper-output-handling/", "confidence": "verified"},
+  "LLM05:2025": {"title": "Improper Output Handling", "edition": "2025", "url": "https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/", "confidence": "verified"},
   "LLM06:2025": {"title": "Excessive Agency", "edition": "2025", "url": "https://genai.owasp.org/llm-top-10/", "confidence": "index-fallback"},
   "LLM07:2025": {"title": "System Prompt Leakage", "edition": "2025", "url": "https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/", "confidence": "verified"},
   "LLM08:2025": {"title": "Vector and Embedding Weaknesses", "edition": "2025", "url": "https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/", "confidence": "verified"},

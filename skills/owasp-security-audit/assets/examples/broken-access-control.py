@@ -120,6 +120,10 @@ def secure_get_user(user_id):
     current_user_id = session.get("user_id")
     current_user = users_db.get(current_user_id)
     
+    # Validate current user exists in database
+    if current_user is None:
+        return jsonify({"error": "User not found"}), 404
+    
     # Authorization logic:
     # 1. User can view their own profile
     # 2. Admin can view any profile
@@ -142,6 +146,10 @@ def secure_refund_order(order_id):
     """
     current_user_id = session.get("user_id")
     current_user = users_db.get(current_user_id)
+    
+    # Validate current user exists in database
+    if current_user is None:
+        return jsonify({"error": "User not found"}), 404
     
     if order_id not in orders_db:
         return jsonify({"error": "Order not found"}), 404
